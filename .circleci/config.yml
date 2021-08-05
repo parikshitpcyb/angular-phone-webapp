@@ -17,7 +17,7 @@ jobs:
             sudo chmod ugo+rwx /home/circleci/project
             ls -l /home/circleci && echo "Full Access Granted"
             (
-              docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py \
+              docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-full-scan.py \
               -t http://www.itsecgames.com/ -d -r testreport.html || \
               if [ $? -ne 1 ]; then exit 0; else exit 1; fi; 
             )
@@ -45,9 +45,9 @@ workflows:
   security_checks:
     jobs:
       - owasp/commandline_owasp_dependency_check
-      - sonar_scanner
-#          requires:
-#            - owasp/commandline_owasp_dependency_check
-      - owasp_zap
-#          requires:
-#            - sonar_scanner
+      - sonar_scanner:
+          requires:
+            - owasp/commandline_owasp_dependency_check
+      - owasp_zap:
+          requires:
+              - sonar_scanner
